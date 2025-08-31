@@ -1,0 +1,54 @@
+# Model configuration
+model_type: custom  # or 'huggingface'
+
+# Data configuration
+data:
+  data_dir: data
+  data_file: rockfall_data.csv
+  feature_columns:
+    - rain_1h_mm
+    - rain_24h_mm
+    - rain_72h_mm
+    - api_value
+    - temperature_c
+    - temp_change_6h_c
+    - temp_change_24h_c
+    - humidity_pct
+    - quake_count_72h
+    - max_magnitude_72h
+    - weighted_magnitude_72h
+    - minutes_since_m3
+    - month
+    - day_sin
+    - day_cos
+    - slope_angle_deg
+    - rock_strength_mpa
+    - geology_type
+  target_column: incident_48h
+  test_size: 0.2
+
+# Model parameters for custom model
+custom_model:
+  name: rockfall_predictor_rf
+  type: random_forest
+  params:
+    n_estimators: 500
+    max_depth: 50
+    min_samples_split: 5
+    min_samples_leaf: 2
+    random_state: 42
+
+# Model parameters for Hugging Face model
+huggingface_model:
+  name: rockfall_predictor_bert
+  model_name: bert-base-uncased
+  params:
+    learning_rate: 2e-5
+    batch_size: 32
+    epochs: 5
+    max_length: 512
+
+# Optimization settings
+use_optuna: true
+optuna_trials: 20
+optimization_metric: f1_score
