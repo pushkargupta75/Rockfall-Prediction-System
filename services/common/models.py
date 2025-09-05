@@ -1,110 +1,81 @@
-from sqlalchemy import create_engine, Column, String, DateTime, Float, Integer, Enum, ForeignKey, JSON
-from sqlalchemy.dialects.postgresql import UUID, JSONB
+from sqlalchemy import Column, Integer, String, Float, DateTime, Boolean, ForeignKey
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
-from datetime import datetime, timezone
+from datetime import datetime
 import uuid
 
 Base = declarative_base()
 
 class Site(Base):
-    __tablename__ = "sites"
-
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    name = Column(String, nullable=False)
+    __tablename__ = 'sites'
+    
+    id = Column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
+    name = Column(String(100), nullable=False)
+    location = Column(String(100), nullable=False)
     latitude = Column(Float, nullable=False)
     longitude = Column(Float, nullable=False)
     elevation = Column(Float)
-    slope_angle_deg = Column(Float)
-    rock_strength_mpa = Column(Float)
-    geology_type = Column(String)
-    is_active = Column(Integer, default=1)
-    created_at = Column(DateTime(timezone=True), default=datetime.utcnow)
-    updated_at = Column(DateTime(timezone=True), onupdate=datetime.utcnow)
-
-    predictions = relationship("Prediction", back_populates="site")
+    description = Column(String(500))
+    is_active = Column(Boolean, default=True)
+    created_at = Column(DateTime, default=datetime.utcnow)
+    
+    # Relationships
     features = relationship("SiteFeature", back_populates="site")
+    alert_config = relationship("AlertConfig", back_populates="site", uselist=False)
+    alert_history = relationship("AlertHistory", back_populates="site")
 
 class SiteFeature(Base):
-    __tablename__ = "site_features"
-
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    site_id = Column(UUID(as_uuid=True), ForeignKey('sites.id'))
-    timestamp = Column(DateTime(timezone=True), nullable=False)
+    __tablename__ = 'site_features'
+    
+    id = Column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
+    site_id = Column(String(36), ForeignKey('sites.id'), nullable=False)
+    timestamp = Column(DateTime, nullable=False)
     
     # Weather features
     rain_1h_mm = Column(Float)
     rain_24h_mm = Column(Float)
     rain_72h_mm = Column(Float)
-    api_value = Column(Float)
     temperature_c = Column(Float)
-    temp_change_6h_c = Column(Float)
-    temp_change_24h_c = Column(Float)
     humidity_pct = Column(Float)
-
+    
     # Seismic features
-    quake_count_72h = Column(Integer)
     max_magnitude_72h = Column(Float)
-    weighted_magnitude_72h = Column(Float)
-    minutes_since_m3 = Column(Integer)
-
-    # Time features
-    month = Column(Integer)
-    day_sin = Column(Float)
-    day_cos = Column(Float)
-
-    created_at = Column(DateTime(timezone=True), default=datetime.utcnow)
+    
+    # Metadata
+    source = Column(String(50))
+    created_at = Column(DateTime, default=datetime.utcnow)
+    
+    # Relationships
     site = relationship("Site", back_populates="features")
 
-class Model(Base):
-    __tablename__ = "models"
+class AlertConfig(Base):
+    __tablename__ = 'alert_configs'
+    
+    id = Column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
+    site_id = Column(String(36), ForeignKey('sites.id'), nullable=False, unique=True)
+    threshold = Column(Float, nullable=False, default=0.7)
+    email_enabled = Column(Boolean, default=True)
+    email_recipients = Column(String(500))  # Comma-separated email addresses
+    sms_enabled = Column(Boolean, default=True)
+    phone_numbers = Column(String(200))  # Comma-separated phone numbers
+    created_at = Column(DateTime, default=datetime.utcnow)
 
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    name = Column(String, nullable=False)
-    version = Column(String, nullable=False)
-    type = Column(String, nullable=False)  # custom or huggingface
-    trained_at = Column(DateTime(timezone=True), nullable=False)
-    metrics = Column(JSONB, nullable=False)  # Training metrics
-    parameters = Column(JSONB, nullable=False)  # Model parameters
-    feature_columns = Column(JSON)  # List of feature columns
-    file_path = Column(String, nullable=False)  # Path to saved model
-    status = Column(Enum('active', 'inactive', 'archived', name='model_status'))
-    created_at = Column(DateTime(timezone=True), default=datetime.utcnow)
+    # Relationships
+    site = relationship("Site", back_populates="alert_config")
 
-class Prediction(Base):
-    __tablename__ = "predictions"
-
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    site_id = Column(UUID(as_uuid=True), ForeignKey('sites.id'))
-    model_id = Column(UUID(as_uuid=True), ForeignKey('models.id'))
-    timestamp = Column(DateTime(timezone=True), nullable=False)
-    probability = Column(Float, nullable=False)
-    risk_level = Column(
-        Enum('LOW', 'MEDIUM', 'HIGH', name='risk_level'),
-        nullable=False
-    )
-    features_snapshot = Column(JSONB, nullable=False)
-    inference_time_ms = Column(Integer)
-    created_at = Column(DateTime(timezone=True), default=datetime.utcnow)
-
-    site = relationship("Site", back_populates="predictions")
-    model = relationship("Model")
-
-class Alert(Base):
-    __tablename__ = "alerts"
-
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    prediction_id = Column(UUID(as_uuid=True), ForeignKey('predictions.id'))
-    site_id = Column(UUID(as_uuid=True), ForeignKey('sites.id'))
-    risk_level = Column(Enum('LOW', 'MEDIUM', 'HIGH', name='risk_level'))
-    status = Column(
-        Enum('pending', 'sent', 'error', name='alert_status'),
-        nullable=False
-    )
-    channels = Column(JSON)  # List of notification channels
-    sent_at = Column(DateTime(timezone=True))
-    error_message = Column(String)
-    created_at = Column(DateTime(timezone=True), default=datetime.utcnow)
+class AlertHistory(Base):
+    __tablename__ = 'alert_history'
+    
+    id = Column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
+    site_id = Column(String(36), ForeignKey('sites.id'), nullable=False)
+    alert_type = Column(String(50), nullable=False)
+    probability = Column(Float)
+    risk_level = Column(String(20))
+    timestamp = Column(DateTime, nullable=False)
+    created_at = Column(DateTime, default=datetime.utcnow)
+    
+    # Relationships
+    site = relationship("Site", back_populates="alert_history")
 
     prediction = relationship("Prediction")
     site = relationship("Site")
