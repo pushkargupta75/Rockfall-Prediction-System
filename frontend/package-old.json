@@ -9,14 +9,42 @@
     "eject": "react-scripts eject"
   },
   "dependencies": {
+    "@emotion/react": "^11.11.1",
+    "@emotion/styled": "^11.11.0",
+    "@mui/icons-material": "^5.14.19",
+    "@mui/material": "^5.14.19",
+    "@mui/x-data-grid": "^6.18.2",
+    "@tanstack/react-query": "^5.8.7",
     "axios": "^1.6.2",
+    "chart.js": "^4.4.0",
     "leaflet": "^1.9.4",
     "react-leaflet": "^4.2.1",
     "recharts": "^2.8.0",
     "lucide-react": "^0.263.1",
+    "moment": "^2.29.4",
     "react": "^18.2.0",
+    "react-chartjs-2": "^5.2.0",
     "react-dom": "^18.2.0",
-    "react-scripts": "5.0.1"
+    "react-scripts": "^5.0.1",
+    "swr": "^2.2.4",
+    "web-vitals": "^3.5.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20",
+    "@types/react": "^18",
+    "@types/react-dom": "^18",
+    "typescript": "^5"
+  },
+  "resolutions": {
+    "nth-check": "^2.1.1",
+    "postcss": "^8.4.31",
+    "webpack-dev-server": "^4.15.1"
+  },
+  "overrides": {
+    "nth-check": "^2.1.1",
+    "postcss": "^8.4.31",
+    "webpack-dev-server": "^4.15.1",
+    "svgo": "^3.0.0"
   },
   "eslintConfig": {
     "extends": [
