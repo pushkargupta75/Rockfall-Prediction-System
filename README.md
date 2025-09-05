@@ -163,3 +163,88 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 ---
 
 > 🚧 **Development Notice**: This system is actively being developed and tested. Some features may be incomplete or subject to change. Please report any issues or suggestions through GitHub issues.
+
+# Rockfall Predictor
+
+Project for rockfall prediction using DEM, drone imagery, and weather data.
+
+## Project Structure
+
+```
+data/
+  raw/                 # Raw DEM, drone images, weather logs
+  processed/           # Preprocessed, ML-ready data
+  external/            # API data (weather, blasting logs)
+  datasets/            # Historical datasets (train/test splits)
+
+src/
+  data_collection/     # Scripts to fetch & store DEM, images, APIs
+    fetch_dem.py
+    fetch_drone.py
+    fetch_weather.py
+  preprocessing/       # Data cleaning & feature extraction
+    preprocess_dem.py
+    preprocess_images.py
+    preprocess_weather.py
+  models/              # ML/DL models
+    dem_model.py
+    drone_cnn.py
+    weather_model.py
+    fusion_model.py
+  prediction/          # Prediction & risk scoring
+    risk_scorer.py
+    run_prediction.py
+  api/                 # REST API (FastAPI/Flask)
+    main.py
+    routes/
+      predict.py
+      upload.py
+      health.py
+  alerts/              # Alert & reporting system
+    sms_alerts.py
+    email_alerts.py
+    report_generator.py
+  utils/               # Helper functions
+    logger.py
+    config_loader.py
+    visualization.py
+
+frontend/                # React dashboard
+  public/
+  src/
+    components/
+      RiskMap.js
+      CrackTimeline.js
+      WeatherChart.js
+    pages/
+    services/        # API integration
+  package.json
+
+config/                  # Config files
+  settings.yaml
+  logging.conf
+
+tests/                   # Unit + integration tests
+  test_models.py
+  test_preprocessing.py
+  test_api.py
+
+deployment/              # Deployment scripts
+  Dockerfile
+  docker-compose.yml
+  ci-cd.yaml           # GitHub Actions/GitLab CI
+  k8s/                 # Kubernetes manifests (if needed)
+
+notebooks/               # Jupyter experiments
+  eda_dem.ipynb
+  eda_drone.ipynb
+  model_prototyping.ipynb
+
+requirements.txt         # Python dependencies
+README.md                # Project documentation
+LICENSE
+```
+
+## GitHub Integration
+- CI/CD pipeline is defined in `deployment/ci-cd.yaml` for GitHub Actions.
+- Please connect your repository to GitHub and enable Actions for automated testing and deployment.

@@ -1,9 +1,14 @@
-# Python
+# Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
 *$py.class
+
+# C extensions
 *.so
+
+# Distribution / packaging
 .Python
+env/
 build/
 develop-eggs/
 dist/
@@ -15,22 +20,53 @@ lib64/
 parts/
 sdist/
 var/
-wheels/
 *.egg-info/
 .installed.cfg
+*.egg
 
-# Node.js - IMPORTANT: Exclude all node_modules and large binary files
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# PyInstaller
+*.manifest
+*.spec
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+.hypothesis/
+.pytest_cache/
+
+# mypy
+.mypy_cache/
+.dmypy.json
+
+# VS Code
+.vscode/
+
+# Environments
+.env
+.venv
+ENV/
+env.bak/
+venv/
+
+# Frontend
 node_modules/
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-.next/
-.nuxt/
-dist/
-.cache/
-.vuepress/dist/
-package-lock.json
-*.node
+frontend/node_modules/
+frontend/build/
+frontend/.next/
 
 # Environment files
 .env
@@ -48,7 +84,6 @@ package-lock.json
 # OS
 .DS_Store
 Thumbs.db
-*.egg
 
 # Virtual Environment
 venv/
